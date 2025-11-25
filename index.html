@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HVAC Compliance Manager</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        .sidebar-link {
+            transition: all 0.2s;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: #1e40af; /* blue-800 */
+            color: white;
+        }
+        .sidebar-link.active i {
+            color: #60a5fa; /* blue-400 */
+        }
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 9999px;
+            font-weight: 600;
+        }
+        .status-active { background-color: #dcfce7; color: #166534; }
+        .status-warning { background-color: #fef9c3; color: #854d0e; }
+        .status-expired { background-color: #fee2e2; color: #991b1b; }
+        
+        /* Modal Animation */
+        .modal {
+            transition: opacity 0.25s ease;
+        }
+        body.modal-active {
+            overflow-x: hidden;
+            overflow-y: visible !important;
+        }
+    </style>
+</head>
+<body class="text-gray-800 h-screen flex overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col z-10">
+        <div class="h-16 flex items-center px-6 border-b border-gray-200">
+            <div class="flex items-center gap-2 text-blue-800 font-bold text-xl">
+                <i class="fa-solid fa-fan"></i>
+                <span>Apex HVAC</span>
+            </div>
+        </div>
+        
+        <nav class="flex-1 overflow-y-auto py-4">
+            <ul class="space-y-1 px-3">
+                <li>
+                    <a href="#" onclick="switchTab('dashboard')" id="nav-dashboard" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium">
+                        <i class="fa-solid fa-gauge w-5 text-center text-gray-400"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="switchTab('licenses')" id="nav-licenses" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium">
+                        <i class="fa-solid fa-certificate w-5 text-center text-gray-400"></i>
+                        Business Licenses
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="switchTab('techs')" id="nav-techs" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium">
+                        <i class="fa-solid fa-users-gear w-5 text-center text-gray-400"></i>
+                        Tech Certifications
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="switchTab('osha')" id="nav-osha" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium">
+                        <i class="fa-solid fa-hard-hat w-5 text-center text-gray-400"></i>
+                        OSHA & Safety
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="switchTab('insurance')" id="nav-insurance" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium">
+                        <i class="fa-solid fa-file-shield w-5 text-center text-gray-400"></i>
+                        Insurance
+                    </a>
+                </li>
+            </ul>
+
+            <div class="mt-8 px-6 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                Reports
+            </div>
+            <ul class="space-y-1 px-3 mt-2">
+                <li>
+                    <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium">
+                        <i class="fa-solid fa-file-pdf w-5 text-center text-gray-400"></i>
+                        Annual Audit
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium">
+                        <i class="fa-solid fa-clipboard-check w-5 text-center text-gray-400"></i>
+                        Vehicle Logs
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="p-4 border-t border-gray-200">
+            <div class="flex items-center gap-3">
+                <img src="https://ui-avatars.com/api/?name=Admin+User&background=eff6ff&color=1e40af" alt="User" class="w-9 h-9 rounded-full">
+                <div>
+                    <p class="text-sm font-medium text-gray-700">Sarah Jenkins</p>
+                    <p class="text-xs text-gray-500">Compliance Officer</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden">
+        
+        <!-- Header -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 lg:px-10">
+            <div class="flex items-center gap-4 md:hidden">
+                <button class="text-gray-500 hover:text-gray-700">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <span class="font-bold text-blue-900 text-lg">Apex HVAC</span>
+            </div>
+            
+            <h1 id="page-title" class="hidden md:block text-xl font-bold text-gray-800">Compliance Dashboard</h1>
+            
+            <div class="flex items-center gap-4">
+                <button class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition" onclick="toggleModal('uploadModal')">
+                    <i class="fa-solid fa-plus"></i>
+                    <span class="hidden sm:inline">Add Record</span>
+                </button>
+                <div class="relative">
+                    <button class="text-gray-400 hover:text-gray-600 p-2">
+                        <i class="fa-solid fa-bell text-lg"></i>
+                        <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Scrollable Area -->
+        <main id="main-content" class="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6 lg:p-10">
+            
+            <!-- Dashboard Tab -->
+            <div id="tab-dashboard" class="space-y-6 animate-fade">
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Overall Compliance</p>
+                            <h3 class="text-3xl font-bold text-gray-800 mt-2">94%</h3>
+                            <p class="text-xs text-green-600 mt-1 flex items-center gap-1">
+                                <i class="fa-solid fa-arrow-trend-up"></i> +2% from last month
+                            </p>
+                        </div>
+                        <div class="p-3 bg-blue-50 rounded-lg text-blue-600">
+                            <i class="fa-solid fa-chart-pie text-xl"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Active Licenses</p>
+                            <h3 class="text-3xl font-bold text-gray-800 mt-2">12</h3>
+                            <p class="text-xs text-gray-500 mt-1">State & Municipal</p>
+                        </div>
+                        <div class="p-3 bg-green-50 rounded-lg text-green-600">
+                            <i class="fa-solid fa-check-circle text-xl"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Expiring Soon</p>
+                            <h3 class="text-3xl font-bold text-gray-800 mt-2">2</h3>
+                            <p class="text-xs text-orange-600 mt-1">Action required in 30 days</p>
+                        </div>
+                        <div class="p-3 bg-orange-50 rounded-lg text-orange-600">
+                            <i class="fa-solid fa-clock text-xl"></i>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex items-start justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-500">Techs Certified</p>
+                            <h3 class="text-3xl font-bold text-gray-800 mt-2">18/18</h3>
+                            <p class="text-xs text-gray-500 mt-1">EPA 608 Universal</p>
+                        </div>
+                        <div class="p-3 bg-purple-50 rounded-lg text-purple-600">
+                            <i class="fa-solid fa-user-graduate text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert Section -->
+                <div class="bg-white border border-red-200 rounded-xl overflow-hidden shadow-sm">
+                    <div class="bg-red-50 px-6 py-4 border-b border-red-100 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-red-100 p-2 rounded-full text-red-600">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <h3 class="font-semibold text-gray-800">Critical Alerts</h3>
+                        </div>
+                        <span class="text-xs font-semibold bg-white text-red-600 border border-red-200 px-2 py-1 rounded">2 Alerts</span>
+                    </div>
+                    <div class="divide-y divide-gray-100">
+                        <div class="p-4 flex items-start gap-4 hover:bg-gray-50">
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-gray-800">State Contractor License Renewal</p>
+                                <p class="text-sm text-gray-500 mt-1">License #HVAC-99201 expires in 14 days. Renewal application drafted but not submitted.</p>
+                            </div>
+                            <button class="text-blue-600 text-sm font-medium hover:underline">Review</button>
+                        </div>
+                        <div class="p-4 flex items-start gap-4 hover:bg-gray-50">
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-gray-800">Vehicle Insurance - Fleet Policy</p>
+                                <p class="text-sm text-gray-500 mt-1">Policy #POL-8821 expires on Nov 30th. Pending updated certificate from broker.</p>
+                            </div>
+                            <button class="text-blue-600 text-sm font-medium hover:underline">Update</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Activity Table -->
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="font-bold text-gray-800">Recent Compliance Activity</h3>
+                        <button class="text-gray-500 hover:text-gray-700"><i class="fa-solid fa-ellipsis"></i></button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-gray-600">
+                            <thead class="bg-gray-50 text-gray-700 uppercase font-semibold text-xs">
+                                <tr>
+                                    <th class="px-6 py-3">Document / Event</th>
+                                    <th class="px-6 py-3">Category</th>
+                                    <th class="px-6 py-3">Date</th>
+                                    <th class="px-6 py-3">User</th>
+                                    <th class="px-6 py-3 text-right">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium text-gray-800">EPA 608 Update - Mike Ross</td>
+                                    <td class="px-6 py-4">Training</td>
+                                    <td class="px-6 py-4">Oct 24, 2023</td>
+                                    <td class="px-6 py-4">S. Jenkins</td>
+                                    <td class="px-6 py-4 text-right"><span class="status-badge status-active">Verified</span></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium text-gray-800">Quarterly Ladder Inspection</td>
+                                    <td class="px-6 py-4">Safety</td>
+                                    <td class="px-6 py-4">Oct 20, 2023</td>
+                                    <td class="px-6 py-4">T. Smith</td>
+                                    <td class="px-6 py-4 text-right"><span class="status-badge status-active">Completed</span></td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 font-medium text-gray-800">City Business License</td>
+                                    <td class="px-6 py-4">Licensing</td>
+                                    <td class="px-6 py-4">Oct 15, 2023</td>
+                                    <td class="px-6 py-4">Admin</td>
+                                    <td class="px-6 py-4 text-right"><span class="status-badge status-expired">Expired</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Licenses Tab (Hidden by default) -->
+            <div id="tab-licenses" class="hidden space-y-6 animate-fade">
+                <div class="flex justify-between items-center">
+                     <div>
+                        <h2 class="text-lg font-bold text-gray-800">Company Licenses</h2>
+                        <p class="text-sm text-gray-500">Manage state, county, and municipal operating permits.</p>
+                     </div>
+                     <button class="border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium">
+                        <i class="fa-solid fa-download mr-1"></i> Export Report
+                     </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- License Card 1 -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="bg-blue-100 text-blue-700 p-2 rounded-lg">
+                                <i class="fa-solid fa-building-columns text-xl"></i>
+                            </div>
+                            <span class="status-badge status-active">Active</span>
+                        </div>
+                        <h3 class="font-bold text-gray-800">State HVAC Contractor</h3>
+                        <p class="text-sm text-gray-500 mb-4">Michigan Dept of Licensing</p>
+                        
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">License #:</span>
+                                <span class="font-mono text-gray-800">HVAC-99201</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Expires:</span>
+                                <span class="text-gray-800">Dec 15, 2023</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100 flex gap-2">
+                             <button class="flex-1 text-center py-2 text-sm border border-gray-300 rounded hover:bg-gray-50">View Doc</button>
+                             <button class="flex-1 text-center py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Renew</button>
+                        </div>
+                    </div>
+
+                    <!-- License Card 2 -->
+                    <div class="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="bg-blue-100 text-blue-700 p-2 rounded-lg">
+                                <i class="fa-solid fa-city text-xl"></i>
+                            </div>
+                            <span class="status-badge status-active">Active</span>
+                        </div>
+                        <h3 class="font-bold text-gray-800">City Business License</h3>
+                        <p class="text-sm text-gray-500 mb-4">City of Detroit</p>
+                        
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">License #:</span>
+                                <span class="font-mono text-gray-800">BUS-22019</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Expires:</span>
+                                <span class="text-gray-800">Jun 20, 2024</span>
+                            </div>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100 flex gap-2">
+                             <button class="flex-1 text-center py-2 text-sm border border-gray-300 rounded hover:bg-gray-50">View Doc</button>
+                             <button class="flex-1 text-center py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700">Renew</button>
+                        </div>
+                    </div>
+                    
+                    <!-- New License Placeholder -->
+                    <button class="border-2 border-dashed border-gray-300 rounded-xl p-5 flex flex-col items-center justify-center text-gray-400 hover:border-blue-500 hover:text-blue-500 transition h-full min-h-[240px]" onclick="toggleModal('uploadModal')">
+                        <i class="fa-solid fa-plus text-3xl mb-2"></i>
+                        <span class="font-medium">Add New License</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Techs Tab -->
+            <div id="tab-techs" class="hidden space-y-6 animate-fade">
+                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <h3 class="font-bold text-gray-800">Technician Certifications</h3>
+                        <div class="relative">
+                            <input type="text" placeholder="Search technicians..." class="pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
+                        </div>
+                    </div>
+                    <table class="w-full text-left text-sm text-gray-600">
+                        <thead class="bg-gray-50 text-gray-700 uppercase font-semibold text-xs">
+                            <tr>
+                                <th class="px-6 py-3">Technician</th>
+                                <th class="px-6 py-3">Role</th>
+                                <th class="px-6 py-3">EPA 608</th>
+                                <th class="px-6 py-3">NATE Cert</th>
+                                <th class="px-6 py-3">OSHA 10</th>
+                                <th class="px-6 py-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 font-medium text-gray-800 flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs">MR</div>
+                                    Mike Ross
+                                </td>
+                                <td class="px-6 py-4">Senior Tech</td>
+                                <td class="px-6 py-4"><span class="status-badge status-active">Universal</span></td>
+                                <td class="px-6 py-4"><span class="status-badge status-active">Active</span></td>
+                                <td class="px-6 py-4"><span class="text-green-600"><i class="fa-solid fa-check"></i> Yes</span></td>
+                                <td class="px-6 py-4 text-right">
+                                    <button class="text-blue-600 hover:text-blue-800">Edit</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 font-medium text-gray-800 flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-700 font-bold text-xs">JS</div>
+                                    John Smith
+                                </td>
+                                <td class="px-6 py-4">Installer</td>
+                                <td class="px-6 py-4"><span class="status-badge status-active">Type II</span></td>
+                                <td class="px-6 py-4"><span class="status-badge status-warning">Expiring</span></td>
+                                <td class="px-6 py-4"><span class="text-green-600"><i class="fa-solid fa-check"></i> Yes</span></td>
+                                <td class="px-6 py-4 text-right">
+                                    <button class="text-blue-600 hover:text-blue-800">Edit</button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 font-medium text-gray-800 flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-700 font-bold text-xs">AL</div>
+                                    Amy Lee
+                                </td>
+                                <td class="px-6 py-4">Apprentice</td>
+                                <td class="px-6 py-4"><span class="status-badge status-active">Type I</span></td>
+                                <td class="px-6 py-4"><span class="text-gray-400">-</span></td>
+                                <td class="px-6 py-4"><span class="text-red-500"><i class="fa-solid fa-xmark"></i> Missing</span></td>
+                                <td class="px-6 py-4 text-right">
+                                    <button class="text-blue-600 hover:text-blue-800">Edit</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- OSHA / Safety Tab -->
+            <div id="tab-osha" class="hidden space-y-6 animate-fade">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
+                        <h3 class="text-lg font-bold text-gray-800 mb-4">Safety Inspection Checklist</h3>
+                        <div class="space-y-4">
+                            <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                                <span class="ml-3 text-sm text-gray-700">PPE Availability (Gloves, Glasses, Boots)</span>
+                            </label>
+                            <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" checked class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                                <span class="ml-3 text-sm text-gray-700">Ladder Safety Inspection (Monthly)</span>
+                            </label>
+                            <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                                <span class="ml-3 text-sm text-gray-700">First Aid Kit Restock (Van Fleet)</span>
+                            </label>
+                            <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                <input type="checkbox" class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500">
+                                <span class="ml-3 text-sm text-gray-700">Hazard Communication Training (HazCom)</span>
+                            </label>
+                        </div>
+                        <button class="mt-4 w-full bg-gray-800 text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-900">Submit Weekly Log</button>
+                    </div>
+
+                    <div class="bg-blue-600 p-6 rounded-xl text-white shadow-lg flex flex-col justify-between">
+                         <div>
+                            <div class="flex items-center gap-2 mb-2 opacity-80">
+                                <i class="fa-solid fa-book-medical"></i>
+                                <span class="text-sm font-bold uppercase tracking-wide">Incident Reporting</span>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-2">Report a Safety Issue</h3>
+                            <p class="text-blue-100 text-sm mb-6">Immediately report any near-misses, injuries, or unsafe job site conditions. Reports are reviewed by the safety officer within 24 hours.</p>
+                         </div>
+                         <button class="bg-white text-blue-700 py-3 rounded-lg font-bold hover:bg-blue-50 transition">
+                            Open Incident Form
+                         </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insurance Tab -->
+            <div id="tab-insurance" class="hidden space-y-6 animate-fade">
+                <div class="bg-white rounded-xl border border-gray-200 p-8 text-center">
+                    <div class="inline-block p-4 rounded-full bg-blue-50 text-blue-600 mb-4">
+                        <i class="fa-solid fa-file-invoice-dollar text-3xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">Insurance Policies</h2>
+                    <p class="text-gray-500 mb-8 max-w-lg mx-auto">Manage General Liability, Workers' Comp, and Commercial Auto policies.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto text-left">
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-bold text-gray-800">General Liability</span>
+                                <span class="text-green-600 text-sm font-medium">Active</span>
+                            </div>
+                            <p class="text-sm text-gray-500">Insurer: Liberty Mutual</p>
+                            <p class="text-sm text-gray-500">Expires: Jan 01, 2025</p>
+                        </div>
+                        <div class="border border-red-200 bg-red-50 rounded-lg p-4">
+                            <div class="flex justify-between mb-2">
+                                <span class="font-bold text-gray-800">Commercial Auto</span>
+                                <span class="text-red-600 text-sm font-medium">Expiring Soon</span>
+                            </div>
+                            <p class="text-sm text-gray-500">Insurer: Progressive</p>
+                            <p class="text-sm text-gray-500">Expires: Nov 30, 2023</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Upload/Add Modal -->
+    <div id="uploadModal" class="modal opacity-0 pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center z-50">
+        <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+        
+        <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded-xl shadow-lg z-50 overflow-y-auto">
+            <div class="modal-content py-4 text-left px-6">
+                <!-- Title -->
+                <div class="flex justify-between items-center pb-3">
+                    <p class="text-2xl font-bold text-gray-800">Add Record</p>
+                    <div class="modal-close cursor-pointer z-50" onclick="toggleModal('uploadModal')">
+                        <i class="fa-solid fa-times text-gray-500 hover:text-gray-700"></i>
+                    </div>
+                </div>
+
+                <!-- Body -->
+                <div class="my-5 space-y-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Record Type</label>
+                        <select class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option>Business License</option>
+                            <option>Technician Certification (EPA)</option>
+                            <option>Insurance Policy</option>
+                            <option>Training Log</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Expiration Date</label>
+                        <input type="date" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Upload Document</label>
+                        <div class="flex items-center justify-center w-full">
+                            <label class="flex flex-col w-full h-32 border-2 border-dashed border-gray-300 hover:bg-gray-50 hover:border-blue-300 rounded-lg cursor-pointer">
+                                <div class="flex flex-col items-center justify-center pt-7">
+                                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-gray-400"></i>
+                                    <p class="pt-1 text-sm tracking-wider text-gray-400 group-hover:text-gray-600">Select a file</p>
+                                </div>
+                                <input type="file" class="opacity-0" />
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="flex justify-end pt-2 gap-2">
+                    <button class="px-4 py-2 bg-gray-200 p-3 rounded-lg text-gray-700 hover:bg-gray-300" onclick="toggleModal('uploadModal')">Cancel</button>
+                    <button class="px-4 py-2 bg-blue-600 p-3 rounded-lg text-white hover:bg-blue-700" onclick="saveRecord()">Save Record</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tabs
+            const tabs = ['dashboard', 'licenses', 'techs', 'osha', 'insurance'];
+            tabs.forEach(t => {
+                document.getElementById('tab-' + t).classList.add('hidden');
+                document.getElementById('nav-' + t).classList.remove('active');
+                
+                // Reset icon color
+                const icon = document.querySelector('#nav-' + t + ' i');
+                if(icon) icon.classList.replace('text-blue-400', 'text-gray-400');
+            });
+
+            // Show selected tab
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+            document.getElementById('nav-' + tabName).classList.add('active');
+            
+            // Highlight icon
+            const activeIcon = document.querySelector('#nav-' + tabName + ' i');
+            if(activeIcon) activeIcon.classList.replace('text-gray-400', 'text-blue-400');
+
+            // Update Header Title
+            const titles = {
+                'dashboard': 'Compliance Dashboard',
+                'licenses': 'Business Licenses',
+                'techs': 'Technician Certifications',
+                'osha': 'Safety & OSHA',
+                'insurance': 'Insurance Policies'
+            };
+            document.getElementById('page-title').innerText = titles[tabName];
+        }
+
+        function toggleModal(modalID) {
+            const modal = document.getElementById(modalID);
+            modal.classList.toggle('opacity-0');
+            modal.classList.toggle('pointer-events-none');
+            document.body.classList.toggle('modal-active');
+        }
+
+        function saveRecord() {
+            // Simulate saving
+            const btn = document.querySelector('#uploadModal button.bg-blue-600');
+            const originalText = btn.innerText;
+            btn.innerText = 'Saving...';
+            
+            setTimeout(() => {
+                btn.innerText = originalText;
+                toggleModal('uploadModal');
+                alert('Record saved successfully!');
+            }, 800);
+        }
+
+        // Add fade animation style
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes fade {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            .animate-fade {
+                animation: fade 0.3s ease-out forwards;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
