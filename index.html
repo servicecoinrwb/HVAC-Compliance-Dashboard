@@ -37,6 +37,7 @@
         .status-active { background-color: #dcfce7; color: #166534; }
         .status-warning { background-color: #fef9c3; color: #854d0e; }
         .status-expired { background-color: #fee2e2; color: #991b1b; }
+        .status-pending { background-color: #eff6ff; color: #1e40af; }
         
         /* Modal Animation */
         .modal {
@@ -61,7 +62,7 @@
             <div class="flex justify-center mb-6">
                 <img src="https://imageview.mechanicaltemp.com/objects/uploads/d16ab63e-1d1e-4b8f-863c-67e66e4894fc" alt="Apex HVAC" class="h-16 w-auto object-contain">
             </div>
-            <h1 class="text-2xl font-bold text-gray-800 mb-2">Welcome to Apex HVAC</h1>
+            <h1 class="text-2xl font-bold text-gray-800 mb-2">Welcome</h1>
             <p class="text-gray-500 mb-8">Compliance & Safety Management System</p>
             
             <button id="google-login-btn" class="w-full flex items-center justify-center gap-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium py-3 px-4 rounded-lg transition-all shadow-sm">
@@ -79,8 +80,7 @@
         <aside class="w-64 bg-white border-r border-gray-200 hidden md:flex flex-col z-10">
             <div class="h-16 flex items-center px-6 border-b border-gray-200">
                 <div class="flex items-center gap-2 text-blue-800 font-bold text-xl">
-                    <img src="https://imageview.mechanicaltemp.com/objects/uploads/d16ab63e-1d1e-4b8f-863c-67e66e4894fc" alt="Logo" class="h-8 w-auto object-contain">
-                    <span>Apex HVAC</span>
+                    <img src="https://imageview.mechanicaltemp.com/objects/uploads/d16ab63e-1d1e-4b8f-863c-67e66e4894fc" alt="Logo" class="h-10 w-auto object-contain">
                 </div>
             </div>
             
@@ -93,9 +93,15 @@
                         </a>
                     </li>
                     <li>
+                        <a href="#" onclick="switchTab('permits')" id="nav-permits" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium">
+                            <i class="fa-solid fa-file-signature w-5 text-center text-gray-400"></i>
+                            Permits & Tracking
+                        </a>
+                    </li>
+                    <li>
                         <a href="#" onclick="switchTab('licenses')" id="nav-licenses" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium">
                             <i class="fa-solid fa-certificate w-5 text-center text-gray-400"></i>
-                            Business Licenses
+                            City Registrations
                         </a>
                     </li>
                     <li>
@@ -164,7 +170,6 @@
                     </button>
                     <div class="flex items-center gap-2">
                         <img src="https://imageview.mechanicaltemp.com/objects/uploads/d16ab63e-1d1e-4b8f-863c-67e66e4894fc" alt="Logo" class="h-8 w-auto object-contain">
-                        <span class="font-bold text-blue-900 text-lg">Apex HVAC</span>
                     </div>
                 </div>
                 
@@ -235,12 +240,67 @@
                     </div>
                 </div>
 
+                <!-- Permits Tab (NEW) -->
+                <div id="tab-permits" class="hidden space-y-6 animate-fade">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-800">Job Permits</h2>
+                            <p class="text-sm text-gray-500">Track active mechanical permits, inspections, and associated fees.</p>
+                        </div>
+                        <div class="flex gap-2">
+                             <div class="relative">
+                                <select class="appearance-none bg-white border border-gray-300 text-gray-700 py-2 px-4 pr-8 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>All Statuses</option>
+                                    <option>Applied</option>
+                                    <option>Issued</option>
+                                    <option>Inspection Needed</option>
+                                    <option>Closed</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </div>
+                            </div>
+                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+                                <i class="fa-solid fa-plus mr-1"></i> New Permit
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-gray-600">
+                                <thead class="bg-gray-50 text-gray-700 uppercase font-semibold text-xs">
+                                    <tr>
+                                        <th class="px-6 py-3">Job Address / Site</th>
+                                        <th class="px-6 py-3">Municipality</th>
+                                        <th class="px-6 py-3">Permit #</th>
+                                        <th class="px-6 py-3">Type</th>
+                                        <th class="px-6 py-3">Status</th>
+                                        <th class="px-6 py-3">Fees</th>
+                                        <th class="px-6 py-3 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="permits-table-body" class="divide-y divide-gray-200">
+                                    <!-- Permits Rows -->
+                                </tbody>
+                            </table>
+                            <div id="permits-empty-state" class="hidden p-8 text-center">
+                                <div class="inline-block p-4 rounded-full bg-gray-50 text-gray-400 mb-3">
+                                    <i class="fa-solid fa-file-signature text-2xl"></i>
+                                </div>
+                                <p class="text-gray-500 font-medium">No active permits tracking.</p>
+                                <button class="mt-2 text-blue-600 text-sm hover:underline">Add your first permit</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Licenses Tab (Hidden by default) -->
                 <div id="tab-licenses" class="hidden space-y-6 animate-fade">
                     <div class="flex justify-between items-center">
                         <div>
-                            <h2 class="text-lg font-bold text-gray-800">Company Licenses</h2>
-                            <p class="text-sm text-gray-500">Manage state, county, and municipal operating permits.</p>
+                            <h2 class="text-lg font-bold text-gray-800">Licenses & City Registrations</h2>
+                            <p class="text-sm text-gray-500">Manage state, county, and municipal operating permits and annual registration fees.</p>
                         </div>
                         <button class="border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 px-3 py-2 rounded-lg text-sm font-medium">
                             <i class="fa-solid fa-download mr-1"></i> Export Report
@@ -321,6 +381,32 @@
                             </button>
                         </div>
                     </div>
+
+                    <!-- Safety Reports Table (New) -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden mt-6">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="font-bold text-gray-800">Safety Reports & Documents</h3>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm text-gray-600">
+                                <thead class="bg-gray-50 text-gray-700 uppercase font-semibold text-xs">
+                                    <tr>
+                                        <th class="px-6 py-3">Document Name</th>
+                                        <th class="px-6 py-3">Type</th>
+                                        <th class="px-6 py-3">Date Added</th>
+                                        <th class="px-6 py-3">Status</th>
+                                        <th class="px-6 py-3 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="safety-docs-body" class="divide-y divide-gray-200">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                             <div id="safety-empty-state" class="p-8 text-center hidden">
+                                <p class="text-gray-500 text-sm">No safety documents uploaded yet.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Insurance Tab -->
@@ -361,14 +447,23 @@
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-2">Record Type</label>
                         <select id="input-record-type" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="license">Business License</option>
+                            <option value="license">Business License / City Reg</option>
+                            <option value="permit">Job Permit</option>
                             <option value="tech">Technician Certification (EPA)</option>
+                            <option value="driver_license">Driver's License</option>
+                            <option value="fire_inspection">Fire Inspection Report</option>
+                            <option value="vehicle_inspection">Vehicle Inspection Report</option>
                             <option value="insurance">Insurance Policy</option>
                             <option value="training">Training Log</option>
+                            <option value="other">Other / Custom</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-2">Expiration Date</label>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Details (City/Job/Name)</label>
+                        <input id="input-details" type="text" placeholder="e.g. Detroit Registration, 123 Main St, John Doe" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Expiration / Date</label>
                         <input id="input-expiration" type="date" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
@@ -496,8 +591,10 @@
             alerts: [],
             activity: [],
             licenses: [],
+            permits: [],
             technicians: [],
-            insurance: []
+            insurance: [],
+            safetyDocs: [] // NEW
         };
 
         function renderAll() {
@@ -508,11 +605,13 @@
             renderAlerts(data.alerts);
             renderActivity(data.activity);
             renderLicenses(data.licenses);
+            renderPermits(data.permits); 
             renderTechs(data.technicians);
             renderInsurance(data.insurance);
+            renderSafetyDocs(data.safetyDocs); // NEW
         }
 
-        // --- RENDER HELPERS (Same as before) ---
+        // --- RENDER HELPERS ---
         function renderKPIs(kpi) {
             const container = document.getElementById('kpi-container');
             if(!container) return;
@@ -600,10 +699,40 @@
             const addBtn = `
                 <button class="border-2 border-dashed border-gray-300 rounded-xl p-5 flex flex-col items-center justify-center text-gray-400 hover:border-blue-500 hover:text-blue-500 transition h-full min-h-[240px]" onclick="toggleModal('uploadModal')">
                     <i class="fa-solid fa-plus text-3xl mb-2"></i>
-                    <span class="font-medium">Add New License</span>
+                    <span class="font-medium">Add License / Reg</span>
                 </button>
             `;
             container.innerHTML = licenseHTML + addBtn;
+        }
+        
+        function renderPermits(permits) {
+            const container = document.getElementById('permits-table-body');
+            const emptyState = document.getElementById('permits-empty-state');
+            
+            if(!container) return;
+            
+            if(permits.length === 0) {
+                if(emptyState) emptyState.classList.remove('hidden');
+                return;
+            } else {
+                if(emptyState) emptyState.classList.add('hidden');
+            }
+
+            container.innerHTML = permits.map(p => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-medium text-gray-800">
+                        ${p.address}
+                    </td>
+                    <td class="px-6 py-4">${p.municipality}</td>
+                    <td class="px-6 py-4 font-mono text-xs">${p.number}</td>
+                    <td class="px-6 py-4">${p.type}</td>
+                    <td class="px-6 py-4"><span class="status-badge ${p.statusClass}">${p.status}</span></td>
+                    <td class="px-6 py-4 text-gray-600">$${p.fees}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button class="text-blue-600 hover:text-blue-800 text-xs font-semibold uppercase">Manage</button>
+                    </td>
+                </tr>
+            `).join('');
         }
 
         function renderTechs(techs) {
@@ -641,12 +770,38 @@
             `).join('');
         }
 
+        function renderSafetyDocs(docs) {
+            const container = document.getElementById('safety-docs-body');
+            const emptyState = document.getElementById('safety-empty-state');
+            if(!container) return;
+
+            if(docs.length === 0) {
+                if(emptyState) emptyState.classList.remove('hidden');
+                container.innerHTML = '';
+                return;
+            } else {
+                if(emptyState) emptyState.classList.add('hidden');
+            }
+
+            container.innerHTML = docs.map(d => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-medium text-gray-800">${d.name}</td>
+                    <td class="px-6 py-4">${d.type}</td>
+                    <td class="px-6 py-4 text-gray-500">${d.date}</td>
+                    <td class="px-6 py-4"><span class="status-badge status-active">Uploaded</span></td>
+                    <td class="px-6 py-4 text-right">
+                        <button class="text-blue-600 hover:text-blue-800 text-sm">View</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
         // Initialize Render
         renderAll();
 
         // Export functions to global scope for HTML event attributes (onclick)
         window.switchTab = function(tabName) {
-            const tabs = ['dashboard', 'licenses', 'techs', 'osha', 'insurance'];
+            const tabs = ['dashboard', 'licenses', 'permits', 'techs', 'osha', 'insurance'];
             tabs.forEach(t => {
                 const tabEl = document.getElementById('tab-' + t);
                 const navEl = document.getElementById('nav-' + t);
@@ -668,7 +823,8 @@
             
             const titles = { 
                 'dashboard': 'Compliance Dashboard', 
-                'licenses': 'Business Licenses', 
+                'licenses': 'City Registrations', 
+                'permits': 'Permits & Tracking',
                 'techs': 'Technician Certifications', 
                 'osha': 'Safety & OSHA', 
                 'insurance': 'Insurance Policies' 
@@ -696,12 +852,46 @@
                 window.toggleModal('uploadModal');
                 
                 const type = document.getElementById('input-record-type').value;
+                const details = document.getElementById('input-details').value || "Unnamed Record";
+                const date = document.getElementById('input-expiration').value || new Date().toISOString().split('T')[0];
+                
+                // 1. Add to Activity Log (Universal)
+                let category = "General";
+                if(type.includes("inspection")) category = "Safety";
+                if(type.includes("license")) category = "Licensing";
+                if(type.includes("permit")) category = "Permits";
+                if(type.includes("driver")) category = "Personnel";
+
+                mockData.activity.unshift({
+                    title: `${type.replace('_', ' ').toUpperCase()} - ${details}`,
+                    category: category,
+                    date: new Date().toLocaleDateString(),
+                    user: "Current User",
+                    status: "Logged",
+                    statusClass: "status-active"
+                });
+                renderActivity(mockData.activity);
+
+                // 2. Add to Specific Tabs
                 if(type === 'license') {
                     mockData.licenses.push({
-                        name: "New License", issuer: "Uploaded Doc", number: "PENDING", expires: document.getElementById('input-expiration').value || "2025-01-01", status: "Active", icon: "fa-file"
+                        name: details, issuer: "City Dept", number: "PENDING", expires: date, status: "Active", icon: "fa-city"
                     });
                     renderLicenses(mockData.licenses); 
+                } else if(type === 'permit') {
+                    mockData.permits.push({
+                        address: details, municipality: "Detroit", number: "P-NEW-001", type: "Mechanical", status: "Applied", statusClass: "status-pending", fees: "150.00"
+                    });
+                    renderPermits(mockData.permits);
+                } else if(type === 'fire_inspection' || type === 'vehicle_inspection' || type === 'driver_license' || type === 'other') {
+                    mockData.safetyDocs.push({
+                        name: details,
+                        type: type.replace('_', ' '),
+                        date: date
+                    });
+                    renderSafetyDocs(mockData.safetyDocs);
                 }
+
                 alert('Record saved locally! (Database write ready)');
             }, 800);
         };
