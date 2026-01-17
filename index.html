@@ -129,14 +129,14 @@
                 </div>
                 <ul class="space-y-1 px-3 mt-2">
                     <li>
-                        <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium">
-                            <i class="fa-solid fa-file-pdf w-5 text-center text-gray-400"></i>
+                        <a href="#" onclick="switchTab('audit')" id="nav-audit" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium">
+                            <i class="fa-solid fa-file-invoice-dollar w-5 text-center text-gray-400"></i>
                             Annual Audit
                         </a>
                     </li>
                     <li>
-                        <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium">
-                            <i class="fa-solid fa-clipboard-check w-5 text-center text-gray-400"></i>
+                        <a href="#" onclick="switchTab('vehicle_logs')" id="nav-vehicle_logs" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium">
+                            <i class="fa-solid fa-truck-pickup w-5 text-center text-gray-400"></i>
                             Vehicle Logs
                         </a>
                     </li>
@@ -424,6 +424,108 @@
                     </div>
                 </div>
 
+                <!-- Annual Audit Tab (NEW) -->
+                <div id="tab-audit" class="hidden space-y-6 animate-fade">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-800">Insurance Annual Audits</h2>
+                            <p class="text-sm text-gray-500">Track Workers' Compensation and General Liability audits.</p>
+                        </div>
+                        <button onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='audit_doc';" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+                            <i class="fa-solid fa-plus mr-1"></i> Upload Audit Doc
+                        </button>
+                    </div>
+
+                    <!-- Audit Status Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="font-bold text-gray-800">General Liability Audit</h3>
+                                <span class="status-badge bg-gray-100 text-gray-600">Pending Start</span>
+                            </div>
+                            <div class="mb-4">
+                                <p class="text-sm text-gray-500">Policy Period</p>
+                                <p class="font-medium text-gray-800">Jan 1, 2023 - Dec 31, 2023</p>
+                            </div>
+                            <button class="w-full py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">View Details</button>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm flex flex-col justify-between">
+                            <div class="flex justify-between items-start mb-4">
+                                <h3 class="font-bold text-gray-800">Workers Comp Audit</h3>
+                                <span class="status-badge bg-gray-100 text-gray-600">Pending Start</span>
+                            </div>
+                             <div class="mb-4">
+                                <p class="text-sm text-gray-500">Policy Period</p>
+                                <p class="font-medium text-gray-800">Jan 1, 2023 - Dec 31, 2023</p>
+                            </div>
+                            <button class="w-full py-2 border border-gray-300 rounded-lg text-sm hover:bg-gray-50">View Details</button>
+                        </div>
+                    </div>
+
+                    <!-- Audit Documents Table -->
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-200">
+                            <h3 class="font-bold text-gray-800">Audit Documents History</h3>
+                        </div>
+                        <table class="w-full text-left text-sm text-gray-600">
+                            <thead class="bg-gray-50 text-gray-700 uppercase font-semibold text-xs">
+                                <tr>
+                                    <th class="px-6 py-3">Document Name</th>
+                                    <th class="px-6 py-3">Date Uploaded</th>
+                                    <th class="px-6 py-3">Status</th>
+                                    <th class="px-6 py-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="audit-docs-body" class="divide-y divide-gray-200">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                        <div id="audit-empty-state" class="p-8 text-center hidden">
+                             <div class="inline-block p-3 rounded-full bg-gray-50 text-gray-400 mb-2">
+                                <i class="fa-solid fa-folder-open text-xl"></i>
+                             </div>
+                            <p class="text-gray-500 text-sm">No audit documents uploaded.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vehicle Logs Tab (NEW) -->
+                <div id="tab-vehicle_logs" class="hidden space-y-6 animate-fade">
+                     <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-800">Vehicle Logs</h2>
+                            <p class="text-sm text-gray-500">Fleet management, mileage tracking, and maintenance logs.</p>
+                        </div>
+                        <button onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='vehicle_inspection';" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+                            <i class="fa-solid fa-plus mr-1"></i> Add Log / Mileage
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                        <table class="w-full text-left text-sm text-gray-600">
+                            <thead class="bg-gray-50 text-gray-700 uppercase font-semibold text-xs">
+                                <tr>
+                                    <th class="px-6 py-3">Vehicle / Unit #</th>
+                                    <th class="px-6 py-3">Driver</th>
+                                    <th class="px-6 py-3">Log Type</th>
+                                    <th class="px-6 py-3">Date</th>
+                                    <th class="px-6 py-3">Details / Mileage</th>
+                                    <th class="px-6 py-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vehicle-logs-body" class="divide-y divide-gray-200">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                        <div id="vehicle-empty-state" class="p-8 text-center hidden">
+                             <div class="inline-block p-3 rounded-full bg-gray-50 text-gray-400 mb-2">
+                                <i class="fa-solid fa-truck text-xl"></i>
+                             </div>
+                            <p class="text-gray-500 text-sm">No vehicle logs recorded.</p>
+                        </div>
+                    </div>
+                </div>
+
             </main>
         </div>
     </div>
@@ -452,15 +554,16 @@
                             <option value="tech">Technician Certification (EPA)</option>
                             <option value="driver_license">Driver's License</option>
                             <option value="fire_inspection">Fire Inspection Report</option>
-                            <option value="vehicle_inspection">Vehicle Inspection Report</option>
+                            <option value="vehicle_inspection">Vehicle Log / Mileage</option>
+                            <option value="audit_doc">Audit Document</option>
                             <option value="insurance">Insurance Policy</option>
                             <option value="training">Training Log</option>
                             <option value="other">Other / Custom</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-2">Details (City/Job/Name)</label>
-                        <input id="input-details" type="text" placeholder="e.g. Detroit Registration, 123 Main St, John Doe" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Details (City/Job/Vehicle/Name)</label>
+                        <input id="input-details" type="text" placeholder="e.g. Van #4, 123 Main St, Audit 2023" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-2">Expiration / Date</label>
@@ -594,7 +697,9 @@
             permits: [],
             technicians: [],
             insurance: [],
-            safetyDocs: [] // NEW
+            safetyDocs: [],
+            auditDocs: [], // NEW
+            vehicleLogs: [] // NEW
         };
 
         function renderAll() {
@@ -608,7 +713,9 @@
             renderPermits(data.permits); 
             renderTechs(data.technicians);
             renderInsurance(data.insurance);
-            renderSafetyDocs(data.safetyDocs); // NEW
+            renderSafetyDocs(data.safetyDocs);
+            renderAuditDocs(data.auditDocs); // NEW
+            renderVehicleLogs(data.vehicleLogs); // NEW
         }
 
         // --- RENDER HELPERS ---
@@ -729,7 +836,7 @@
                     <td class="px-6 py-4"><span class="status-badge ${p.statusClass}">${p.status}</span></td>
                     <td class="px-6 py-4 text-gray-600">$${p.fees}</td>
                     <td class="px-6 py-4 text-right">
-                        <button class="text-blue-600 hover:text-blue-800 text-xs font-semibold uppercase">Manage</button>
+                        <button onclick="managePermit('${p.number}', '${p.address}')" class="text-blue-600 hover:text-blue-800 text-xs font-semibold uppercase">Manage</button>
                     </td>
                 </tr>
             `).join('');
@@ -796,12 +903,64 @@
             `).join('');
         }
 
+        function renderAuditDocs(docs) {
+            const container = document.getElementById('audit-docs-body');
+            const emptyState = document.getElementById('audit-empty-state');
+            if(!container) return;
+
+            if(docs.length === 0) {
+                if(emptyState) emptyState.classList.remove('hidden');
+                container.innerHTML = '';
+                return;
+            } else {
+                if(emptyState) emptyState.classList.add('hidden');
+            }
+
+            container.innerHTML = docs.map(d => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-medium text-gray-800">${d.name}</td>
+                    <td class="px-6 py-4">${d.date}</td>
+                    <td class="px-6 py-4"><span class="status-badge status-active">Uploaded</span></td>
+                    <td class="px-6 py-4 text-right">
+                        <button class="text-blue-600 hover:text-blue-800 text-sm">View</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderVehicleLogs(logs) {
+            const container = document.getElementById('vehicle-logs-body');
+            const emptyState = document.getElementById('vehicle-empty-state');
+            if(!container) return;
+
+            if(logs.length === 0) {
+                if(emptyState) emptyState.classList.remove('hidden');
+                container.innerHTML = '';
+                return;
+            } else {
+                if(emptyState) emptyState.classList.add('hidden');
+            }
+
+            container.innerHTML = logs.map(l => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 font-medium text-gray-800">${l.vehicle}</td>
+                    <td class="px-6 py-4">${l.driver}</td>
+                    <td class="px-6 py-4">${l.type}</td>
+                    <td class="px-6 py-4">${l.date}</td>
+                    <td class="px-6 py-4">${l.details}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button class="text-blue-600 hover:text-blue-800 text-sm">Edit</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
         // Initialize Render
         renderAll();
 
         // Export functions to global scope for HTML event attributes (onclick)
         window.switchTab = function(tabName) {
-            const tabs = ['dashboard', 'licenses', 'permits', 'techs', 'osha', 'insurance'];
+            const tabs = ['dashboard', 'licenses', 'permits', 'techs', 'osha', 'insurance', 'audit', 'vehicle_logs'];
             tabs.forEach(t => {
                 const tabEl = document.getElementById('tab-' + t);
                 const navEl = document.getElementById('nav-' + t);
@@ -827,7 +986,9 @@
                 'permits': 'Permits & Tracking',
                 'techs': 'Technician Certifications', 
                 'osha': 'Safety & OSHA', 
-                'insurance': 'Insurance Policies' 
+                'insurance': 'Insurance Policies',
+                'audit': 'Annual Insurance Audits',
+                'vehicle_logs': 'Vehicle Logs & Maintenance'
             };
             document.getElementById('page-title').innerText = titles[tabName] || 'Dashboard';
         };
@@ -839,6 +1000,13 @@
                 modal.classList.toggle('pointer-events-none');
                 document.body.classList.toggle('modal-active');
             }
+        };
+
+        window.managePermit = function(number, address) {
+            // Pre-fill modal for editing/managing
+            document.getElementById('input-record-type').value = 'permit';
+            document.getElementById('input-details').value = address + ' (' + number + ')';
+            window.toggleModal('uploadModal');
         };
 
         window.saveRecord = async function() {
@@ -884,6 +1052,8 @@
                 if(type.includes("license")) category = "Licensing";
                 if(type.includes("permit")) category = "Permits";
                 if(type.includes("driver")) category = "Personnel";
+                if(type.includes("audit")) category = "Audit";
+                if(type.includes("vehicle")) category = "Fleet";
 
                 mockData.activity.unshift({
                     title: `${type.replace('_', ' ').toUpperCase()} - ${details}`,
@@ -906,13 +1076,28 @@
                         address: details, municipality: "Detroit", number: "P-NEW-001", type: "Mechanical", status: "Applied", statusClass: "status-pending", fees: "150.00"
                     });
                     renderPermits(mockData.permits);
-                } else if(type === 'fire_inspection' || type === 'vehicle_inspection' || type === 'driver_license' || type === 'other') {
+                } else if(type === 'fire_inspection' || type === 'driver_license' || type === 'other') {
                     mockData.safetyDocs.push({
                         name: details,
                         type: type.replace('_', ' '),
                         date: date
                     });
                     renderSafetyDocs(mockData.safetyDocs);
+                } else if(type === 'audit_doc') {
+                    mockData.auditDocs.push({
+                        name: details,
+                        date: date
+                    });
+                    renderAuditDocs(mockData.auditDocs);
+                } else if(type === 'vehicle_inspection') {
+                     mockData.vehicleLogs.push({
+                        vehicle: details.split(',')[0] || "Unknown",
+                        driver: "Current Driver",
+                        type: "Inspection/Log",
+                        date: date,
+                        details: details
+                    });
+                    renderVehicleLogs(mockData.vehicleLogs);
                 }
             }, 500);
         };
