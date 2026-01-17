@@ -260,7 +260,7 @@
                                     <i class="fa-solid fa-chevron-down text-xs"></i>
                                 </div>
                             </div>
-                            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+                            <button onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='permit';" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
                                 <i class="fa-solid fa-plus mr-1"></i> New Permit
                             </button>
                         </div>
@@ -289,7 +289,7 @@
                                     <i class="fa-solid fa-file-signature text-2xl"></i>
                                 </div>
                                 <p class="text-gray-500 font-medium">No active permits tracking.</p>
-                                <button class="mt-2 text-blue-600 text-sm hover:underline">Add your first permit</button>
+                                <button class="mt-2 text-blue-600 text-sm hover:underline" onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='permit';">Add your first permit</button>
                             </div>
                         </div>
                     </div>
@@ -841,21 +841,44 @@
             }
         };
 
-        window.saveRecord = function() {
-            // Future: addDoc(collection(db, "licenses"), { ... })
+        window.saveRecord = async function() {
             const btn = document.querySelector('#uploadModal button.bg-blue-600');
             const originalText = btn.innerText;
             btn.innerText = 'Saving...';
             
+            const type = document.getElementById('input-record-type').value;
+            const details = document.getElementById('input-details').value || "Unnamed Record";
+            const date = document.getElementById('input-expiration').value || new Date().toISOString().split('T')[0];
+            
+            // 1. ATTEMPT FIRESTORE WRITE IF LOGGED IN
+            if (auth.currentUser) {
+                try {
+                    await addDoc(collection(db, "activity"), {
+                        type: type,
+                        details: details,
+                        date: date,
+                        userEmail: auth.currentUser.email,
+                        timestamp: new Date()
+                    });
+                    
+                    // Also save to specific collections if you want rigorous data structure
+                    // await addDoc(collection(db, "permits"), { ... });
+                    
+                    alert('Saved to Firebase Database!');
+                } catch (e) {
+                    console.error("Error adding document: ", e);
+                    alert('Error saving to Cloud. Check console.');
+                }
+            } else {
+                 alert('Saved LOCALLY (Not logged in to Firebase)');
+            }
+
+            // 2. UPDATE UI (Optimistic Update)
             setTimeout(() => {
                 btn.innerText = originalText;
                 window.toggleModal('uploadModal');
                 
-                const type = document.getElementById('input-record-type').value;
-                const details = document.getElementById('input-details').value || "Unnamed Record";
-                const date = document.getElementById('input-expiration').value || new Date().toISOString().split('T')[0];
-                
-                // 1. Add to Activity Log (Universal)
+                // Add to Activity Log (Universal)
                 let category = "General";
                 if(type.includes("inspection")) category = "Safety";
                 if(type.includes("license")) category = "Licensing";
@@ -866,13 +889,13 @@
                     title: `${type.replace('_', ' ').toUpperCase()} - ${details}`,
                     category: category,
                     date: new Date().toLocaleDateString(),
-                    user: "Current User",
+                    user: auth.currentUser ? (auth.currentUser.displayName || "Me") : "Guest",
                     status: "Logged",
                     statusClass: "status-active"
                 });
                 renderActivity(mockData.activity);
 
-                // 2. Add to Specific Tabs
+                // Add to Specific Tabs
                 if(type === 'license') {
                     mockData.licenses.push({
                         name: details, issuer: "City Dept", number: "PENDING", expires: date, status: "Active", icon: "fa-city"
@@ -891,9 +914,7 @@
                     });
                     renderSafetyDocs(mockData.safetyDocs);
                 }
-
-                alert('Record saved locally! (Database write ready)');
-            }, 800);
+            }, 500);
         };
 
         // Add fade animation style dynamically
