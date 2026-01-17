@@ -483,37 +483,21 @@
         // --- 2. DATA RENDERING (Currently Mock, Prepared for Firestore) ---
         
         // Mock data remains for initial render until Firestore fetch is implemented
+        // RESET TO EMPTY AS REQUESTED
         const mockData = {
             kpi: {
-                score: 94,
-                scoreTrend: "+2%",
-                activeLicenses: 12,
-                expiringCount: 2,
-                certifiedTechs: 18,
-                totalTechs: 18
+                score: 0,
+                scoreTrend: "0%",
+                activeLicenses: 0,
+                expiringCount: 0,
+                certifiedTechs: 0,
+                totalTechs: 0
             },
-            alerts: [
-                { title: "State Contractor License Renewal", desc: "License #HVAC-99201 expires in 14 days.", action: "Review" },
-                { title: "Vehicle Insurance - Fleet Policy", desc: "Policy #POL-8821 expires on Nov 30th.", action: "Update" }
-            ],
-            activity: [
-                { title: "EPA 608 Update - Mike Ross", category: "Training", date: "Oct 24, 2023", user: "S. Jenkins", status: "Verified", statusClass: "status-active" },
-                { title: "Quarterly Ladder Inspection", category: "Safety", date: "Oct 20, 2023", user: "T. Smith", status: "Completed", statusClass: "status-active" },
-                { title: "City Business License", category: "Licensing", date: "Oct 15, 2023", user: "Admin", status: "Expired", statusClass: "status-expired" }
-            ],
-            licenses: [
-                { name: "State HVAC Contractor", issuer: "Michigan Dept of Licensing", number: "HVAC-99201", expires: "Dec 15, 2023", status: "Active", icon: "fa-building-columns" },
-                { name: "City Business License", issuer: "City of Detroit", number: "BUS-22019", expires: "Jun 20, 2024", status: "Active", icon: "fa-city" }
-            ],
-            technicians: [
-                { name: "Mike Ross", initials: "MR", role: "Senior Tech", epa: "Universal", nate: "Active", osha: "Yes", epaClass: "status-active", nateClass: "status-active", oshaClass: "text-green-600", color: "blue" },
-                { name: "John Smith", initials: "JS", role: "Installer", epa: "Type II", nate: "Expiring", osha: "Yes", epaClass: "status-active", nateClass: "status-warning", oshaClass: "text-green-600", color: "orange" },
-                { name: "Amy Lee", initials: "AL", role: "Apprentice", epa: "Type I", nate: "-", osha: "Missing", epaClass: "status-active", nateClass: "text-gray-400", oshaClass: "text-red-500", color: "purple" }
-            ],
-            insurance: [
-                { type: "General Liability", status: "Active", insurer: "Liberty Mutual", expires: "Jan 01, 2025", borderClass: "border-gray-200", bgClass: "bg-white", textClass: "text-green-600" },
-                { type: "Commercial Auto", status: "Expiring Soon", insurer: "Progressive", expires: "Nov 30, 2023", borderClass: "border-red-200", bgClass: "bg-red-50", textClass: "text-red-600" }
-            ]
+            alerts: [],
+            activity: [],
+            licenses: [],
+            technicians: [],
+            insurance: []
         };
 
         function renderAll() {
