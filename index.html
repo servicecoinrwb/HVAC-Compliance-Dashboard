@@ -260,7 +260,7 @@
                                     <i class="fa-solid fa-chevron-down text-xs"></i>
                                 </div>
                             </div>
-                            <button onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='permit';" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+                            <button onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='permit'; toggleFormFields();" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
                                 <i class="fa-solid fa-plus mr-1"></i> New Permit
                             </button>
                         </div>
@@ -289,7 +289,7 @@
                                     <i class="fa-solid fa-file-signature text-2xl"></i>
                                 </div>
                                 <p class="text-gray-500 font-medium">No active permits tracking.</p>
-                                <button class="mt-2 text-blue-600 text-sm hover:underline" onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='permit';">Add your first permit</button>
+                                <button class="mt-2 text-blue-600 text-sm hover:underline" onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='permit'; toggleFormFields();">Add your first permit</button>
                             </div>
                         </div>
                     </div>
@@ -321,7 +321,7 @@
                                 <input type="text" placeholder="Search technicians..." class="pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
                             </div>
-                            <button onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='tech';" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+                            <button onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='tech'; toggleFormFields();" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
                                 <i class="fa-solid fa-plus mr-1"></i> Add Tech
                             </button>
                         </div>
@@ -370,7 +370,7 @@
                                     <span class="ml-3 text-sm text-gray-700">Hazard Communication Training (HazCom)</span>
                                 </label>
                             </div>
-                            <button class="mt-4 w-full bg-gray-800 text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-900">Submit Weekly Log</button>
+                            <button class="mt-4 w-full bg-gray-800 text-white py-2 rounded-lg text-sm font-medium hover:bg-gray-900" onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='training'; toggleFormFields(); document.getElementById('input-details').value='Weekly Safety Log';">Submit Weekly Log</button>
                         </div>
 
                         <div class="bg-blue-600 p-6 rounded-xl text-white shadow-lg flex flex-col justify-between">
@@ -382,7 +382,7 @@
                                 <h3 class="text-2xl font-bold mb-2">Report a Safety Issue</h3>
                                 <p class="text-blue-100 text-sm mb-6">Immediately report any near-misses, injuries, or unsafe job site conditions. Reports are reviewed by the safety officer within 24 hours.</p>
                             </div>
-                            <button class="bg-white text-blue-700 py-3 rounded-lg font-bold hover:bg-blue-50 transition">
+                            <button class="bg-white text-blue-700 py-3 rounded-lg font-bold hover:bg-blue-50 transition" onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='other'; toggleFormFields(); document.getElementById('input-details').value='Incident Report';">
                                 Open Incident Form
                             </button>
                         </div>
@@ -423,6 +423,9 @@
                         </div>
                         <h2 class="text-xl font-bold text-gray-800">Insurance Policies</h2>
                         <p class="text-gray-500 mb-8 max-w-lg mx-auto">Manage General Liability, Workers' Comp, and Commercial Auto policies.</p>
+                        <button onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='insurance'; toggleFormFields();" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 mb-6">
+                            <i class="fa-solid fa-plus mr-1"></i> Add Policy
+                        </button>
                         
                         <div id="insurance-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto text-left">
                             <!-- Insurance cards rendered via JS -->
@@ -437,7 +440,7 @@
                             <h2 class="text-lg font-bold text-gray-800">Insurance Annual Audits</h2>
                             <p class="text-sm text-gray-500">Track Workers' Compensation and General Liability audits.</p>
                         </div>
-                        <button onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='audit_doc';" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+                        <button onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='audit_doc'; toggleFormFields();" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
                             <i class="fa-solid fa-plus mr-1"></i> Upload Audit Doc
                         </button>
                     </div>
@@ -502,7 +505,7 @@
                             <h2 class="text-lg font-bold text-gray-800">Vehicle Logs</h2>
                             <p class="text-sm text-gray-500">Fleet management, mileage tracking, and maintenance logs.</p>
                         </div>
-                        <button onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='vehicle_inspection';" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+                        <button onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='vehicle_inspection'; toggleFormFields();" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
                             <i class="fa-solid fa-plus mr-1"></i> Add Log / Mileage
                         </button>
                     </div>
@@ -554,7 +557,7 @@
                 <div class="my-5 space-y-4">
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-2">Record Type</label>
-                        <select id="input-record-type" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <select id="input-record-type" onchange="toggleFormFields()" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="license">Business License / City Reg</option>
                             <option value="permit">Job Permit</option>
                             <option value="tech">Technician Certification (EPA)</option>
@@ -567,10 +570,57 @@
                             <option value="other">Other / Custom</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block text-gray-700 text-sm font-bold mb-2">Details (City/Job/Vehicle/Name)</label>
-                        <input id="input-details" type="text" placeholder="e.g. Van #4, 123 Main St, Audit 2023" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    
+                    <!-- Generic Details Fields -->
+                    <div id="generic-fields">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Details (City/Job/Vehicle/Name)</label>
+                            <input id="input-details" type="text" placeholder="e.g. Van #4, 123 Main St, Audit 2023" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
                     </div>
+
+                    <!-- Specific Permit Fields -->
+                    <div id="permit-fields" class="hidden space-y-4">
+                        <div>
+                            <label class="block text-gray-700 text-sm font-bold mb-2">Job Address</label>
+                            <input id="input-permit-addr" type="text" placeholder="e.g. 123 Main St" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Municipality</label>
+                                <input id="input-permit-mun" type="text" placeholder="e.g. Detroit" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Permit #</label>
+                                <input id="input-permit-num" type="text" placeholder="e.g. P-2024-001" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Type</label>
+                                <select id="input-permit-type" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>Mechanical</option>
+                                    <option>Electrical</option>
+                                    <option>Plumbing</option>
+                                    <option>Building</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Status</label>
+                                <select id="input-permit-status" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <option>Applied</option>
+                                    <option>Issued</option>
+                                    <option>Inspection</option>
+                                    <option>Closed</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 text-sm font-bold mb-2">Fees ($)</label>
+                                <input id="input-permit-fees" type="text" placeholder="0.00" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+
                     <div>
                         <label class="block text-gray-700 text-sm font-bold mb-2">Expiration / Date</label>
                         <input id="input-expiration" type="date" class="block w-full border border-gray-300 rounded-lg p-2.5 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -722,6 +772,7 @@
             mockData.vehicleLogs = [];
             mockData.activity = [];
             mockData.technicians = [];
+            mockData.insurance = [];
 
             // 1. Fetch Licenses
             try {
@@ -815,8 +866,25 @@
                     });
                 });
             } catch (e) { console.error("Error fetching technicians", e); }
+
+            // 7. Fetch Insurance
+            try {
+                const insuranceSnap = await getDocs(collection(db, "insurance"));
+                insuranceSnap.forEach(doc => {
+                    const data = doc.data();
+                    mockData.insurance.push({
+                        type: data.type || "General Liability",
+                        status: data.status || "Active",
+                        insurer: data.insurer || "Carrier",
+                        expires: data.expires || "N/A",
+                        borderClass: "border-gray-200",
+                        bgClass: "bg-white",
+                        textClass: "text-green-600"
+                    });
+                });
+            } catch (e) { console.error("Error fetching insurance", e); }
             
-            // 7. Fetch Activity (Generic)
+            // 8. Fetch Activity (Generic)
             try {
                 // Fetch recent activity
                 const activitySnap = await getDocs(query(collection(db, "activity"), orderBy("timestamp", "desc")));
@@ -1174,10 +1242,26 @@
             }
         };
 
+        window.toggleFormFields = function() {
+            const type = document.getElementById('input-record-type').value;
+            const permitFields = document.getElementById('permit-fields');
+            const genericFields = document.getElementById('generic-fields');
+            
+            if (type === 'permit') {
+                permitFields.classList.remove('hidden');
+                genericFields.classList.add('hidden');
+            } else {
+                permitFields.classList.add('hidden');
+                genericFields.classList.remove('hidden');
+            }
+        };
+
         window.managePermit = function(number, address) {
             // Pre-fill modal for editing/managing
             document.getElementById('input-record-type').value = 'permit';
-            document.getElementById('input-details').value = address + ' (' + number + ')';
+            toggleFormFields();
+            document.getElementById('input-permit-addr').value = address;
+            document.getElementById('input-permit-num').value = number;
             window.toggleModal('uploadModal');
         };
 
@@ -1187,8 +1271,15 @@
             btn.innerText = 'Saving...';
             
             const type = document.getElementById('input-record-type').value;
-            const details = document.getElementById('input-details').value || "Unnamed Record";
             const date = document.getElementById('input-expiration').value || new Date().toISOString().split('T')[0];
+            
+            // Get standard details or permit specific
+            let details = document.getElementById('input-details').value;
+            if(type === 'permit') {
+                details = document.getElementById('input-permit-addr').value || "Unnamed Job Site";
+            } else {
+                details = details || "Unnamed Record";
+            }
             
             // 1. ATTEMPT FIRESTORE WRITE IF LOGGED IN
             if (auth.currentUser) {
@@ -1216,7 +1307,14 @@
                         Object.assign(docData, { name: details, number: "PENDING", expires: date, status: "Active", issuer: "City Dept" });
                     } else if (type === 'permit') {
                         targetCollection = "permits";
-                        Object.assign(docData, { address: details, municipality: "Detroit", number: "P-NEW", type: "Mechanical", status: "Applied", fees: "150.00" });
+                        Object.assign(docData, { 
+                            address: document.getElementById('input-permit-addr').value,
+                            municipality: document.getElementById('input-permit-mun').value, 
+                            number: document.getElementById('input-permit-num').value, 
+                            type: document.getElementById('input-permit-type').value, 
+                            status: document.getElementById('input-permit-status').value, 
+                            fees: document.getElementById('input-permit-fees').value 
+                        });
                     } else if (type === 'vehicle_inspection') {
                         targetCollection = "vehicle_logs";
                         Object.assign(docData, { vehicle: details.split(',')[0], driver: "Current User", type: "Inspection", details: details });
@@ -1229,6 +1327,9 @@
                     } else if (type === 'tech') {
                         targetCollection = "technicians";
                         Object.assign(docData, { name: details, role: "Technician", epa: "Pending", nate: "Active" });
+                    } else if (type === 'insurance') {
+                        targetCollection = "insurance";
+                        Object.assign(docData, { type: details, insurer: "Pending", expires: date, status: "Active" });
                     }
 
                     if(targetCollection) {
