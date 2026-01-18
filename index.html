@@ -321,6 +321,9 @@
                                 <input type="text" placeholder="Search technicians..." class="pl-9 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <i class="fa-solid fa-search absolute left-3 top-2.5 text-gray-400 text-sm"></i>
                             </div>
+                            <button onclick="toggleModal('uploadModal'); document.getElementById('input-record-type').value='tech';" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">
+                                <i class="fa-solid fa-plus mr-1"></i> Add Tech
+                            </button>
                         </div>
                         <table class="w-full text-left text-sm text-gray-600">
                             <thead class="bg-gray-50 text-gray-700 uppercase font-semibold text-xs">
@@ -337,6 +340,9 @@
                                 <!-- Tech rows rendered here via JS -->
                             </tbody>
                         </table>
+                        <div id="techs-empty-state" class="hidden p-8 text-center">
+                            <p class="text-gray-500 text-sm">No technicians recorded.</p>
+                        </div>
                     </div>
                 </div>
 
@@ -715,6 +721,7 @@
             mockData.auditDocs = [];
             mockData.vehicleLogs = [];
             mockData.activity = [];
+            mockData.technicians = [];
 
             // 1. Fetch Licenses
             try {
@@ -788,8 +795,28 @@
                     });
                 });
             } catch (e) { console.error("Error fetching vehicle logs", e); }
+
+            // 6. Fetch Technicians
+            try {
+                const techSnap = await getDocs(collection(db, "technicians"));
+                techSnap.forEach(doc => {
+                    const data = doc.data();
+                    mockData.technicians.push({
+                        name: data.name,
+                        initials: data.name ? data.name.substring(0, 2).toUpperCase() : "XX",
+                        role: data.role || "Technician",
+                        epa: data.epa || "Pending",
+                        nate: data.nate || "-",
+                        osha: "Yes",
+                        epaClass: "status-active",
+                        nateClass: "status-pending",
+                        oshaClass: "text-green-600",
+                        color: "blue"
+                    });
+                });
+            } catch (e) { console.error("Error fetching technicians", e); }
             
-            // 6. Fetch Activity (Generic)
+            // 7. Fetch Activity (Generic)
             try {
                 // Fetch recent activity
                 const activitySnap = await getDocs(query(collection(db, "activity"), orderBy("timestamp", "desc")));
@@ -838,19 +865,20 @@
             renderVehicleLogs(mockData.vehicleLogs);
         }
 
-        // --- RENDER HELPERS (Same as before) ---
+        // --- RENDER HELPERS ---
         function renderKPIs(kpi) {
             const container = document.getElementById('kpi-container');
             if(!container) return;
             // Recalculate KPIs based on real data length
             const totalLicenses = mockData.licenses.length;
             const totalPermits = mockData.permits.length;
+            const totalTechs = mockData.technicians.length;
             
             const cards = [
                 { label: "Overall Compliance", value: `98%`, sub: `+2% from last month`, subColor: "text-green-600", icon: "fa-chart-pie", iconBg: "bg-blue-50", iconColor: "text-blue-600" },
                 { label: "Active Licenses", value: totalLicenses, sub: "State & Municipal", subColor: "text-gray-500", icon: "fa-check-circle", iconBg: "bg-green-50", iconColor: "text-green-600" },
                 { label: "Active Permits", value: totalPermits, sub: "Jobs in progress", subColor: "text-orange-600", icon: "fa-file-signature", iconBg: "bg-orange-50", iconColor: "text-orange-600" },
-                { label: "Techs Certified", value: `18/18`, sub: "EPA 608 Universal", subColor: "text-gray-500", icon: "fa-user-graduate", iconBg: "bg-purple-50", iconColor: "text-purple-600" },
+                { label: "Techs Certified", value: `${totalTechs}/${totalTechs}`, sub: "EPA 608 Universal", subColor: "text-gray-500", icon: "fa-user-graduate", iconBg: "bg-purple-50", iconColor: "text-purple-600" },
             ];
 
             container.innerHTML = cards.map(c => `
@@ -903,6 +931,12 @@
         function renderLicenses(licenses) {
             const container = document.getElementById('licenses-container');
             if(!container) return;
+            
+            if(licenses.length === 0) {
+                container.innerHTML = `<p class="col-span-3 text-center text-gray-500 py-10">No licenses found. Click "Add Record" to create one.</p>`;
+                return;
+            }
+
             const licenseHTML = licenses.map(l => `
                 <div class="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition">
                     <div class="flex justify-between items-start mb-4">
@@ -930,13 +964,7 @@
                 </div>
             `).join('');
             
-            const addBtn = `
-                <button class="border-2 border-dashed border-gray-300 rounded-xl p-5 flex flex-col items-center justify-center text-gray-400 hover:border-blue-500 hover:text-blue-500 transition h-full min-h-[240px]" onclick="toggleModal('uploadModal')">
-                    <i class="fa-solid fa-plus text-3xl mb-2"></i>
-                    <span class="font-medium">Add License / Reg</span>
-                </button>
-            `;
-            container.innerHTML = licenseHTML + addBtn;
+            container.innerHTML = licenseHTML;
         }
         
         function renderPermits(permits) {
@@ -972,7 +1000,17 @@
 
         function renderTechs(techs) {
             const container = document.getElementById('techs-table-body');
+            const emptyState = document.getElementById('techs-empty-state');
             if(!container) return;
+
+            if(techs.length === 0) {
+                if(emptyState) emptyState.classList.remove('hidden');
+                container.innerHTML = '';
+                return;
+            } else {
+                if(emptyState) emptyState.classList.add('hidden');
+            }
+
             container.innerHTML = techs.map(t => `
                 <tr class="hover:bg-gray-50">
                     <td class="px-6 py-4 font-medium text-gray-800 flex items-center gap-3">
@@ -993,6 +1031,12 @@
         function renderInsurance(policies) {
             const container = document.getElementById('insurance-container');
             if(!container) return;
+            
+            if(policies.length === 0) {
+                container.innerHTML = `<p class="col-span-2 text-center text-gray-500 py-10">No policies found. Click "Add Record" to create one.</p>`;
+                return;
+            }
+
             container.innerHTML = policies.map(p => `
                 <div class="border ${p.borderClass} ${p.bgClass} rounded-lg p-4">
                     <div class="flex justify-between mb-2">
@@ -1182,6 +1226,9 @@
                     } else if (type.includes('inspection') || type.includes('driver')) {
                         targetCollection = "safety_docs";
                         Object.assign(docData, { name: details, type: type.replace('_', ' ') });
+                    } else if (type === 'tech') {
+                        targetCollection = "technicians";
+                        Object.assign(docData, { name: details, role: "Technician", epa: "Pending", nate: "Active" });
                     }
 
                     if(targetCollection) {
